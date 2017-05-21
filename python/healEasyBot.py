@@ -107,9 +107,12 @@ class healEasyBot():
         if action == "findDoctorsByLocation":
             print "find doctors"
             reply = self.handle_find_doctor_by_location_message(conversation_response)
-        else:
-            print "norma"
-            reply = self.handle_default_message(conversation_response)
+        else: 
+            if action == "searchPharmacy":
+                reply = self.handle_find_pharmacy_by_location_message(conversation_response)
+            else:
+                print "norma"
+                reply = self.handle_default_message(conversation_response)
 
         # Finally, we log every action performed as part of the active conversation
         # in our Cloudant dialog database and return the reply to be sent to the user.
@@ -141,14 +144,19 @@ class healEasyBot():
         conversation_response - The response from Watson Conversation
         """
 
-        print "find doctor by locatino"
+        specialtyDic = {}
+        print "find doctor by location"
         if self.foursquare_client is None:
             return 'Please configure Foursquare.'
         # Get the specialty from the context to be used in the query to Foursquare
         query = ''
+        specialty = ''
         if 'specialty' in conversation_response['context'].keys() and conversation_response['context']['specialty'] is not None:
-            query = query + conversation_response['context']['specialty'] + ' '
-        query = query 
+            specialty = conversation_response['context']['specialty']
+        print "Specialty is :" + specialty    
+            
+        query = query + conversation_response['context']['specialty'] + ' '
+        #query = query 
         # Get the location entered by the user to be used in the query
         location = 'Austin'
         #if 'entities' in conversation_response.keys():
