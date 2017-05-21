@@ -106,14 +106,14 @@ class healEasyBot():
       #  print "action is " + action
         conversation_response['context']['action'] =None
         if action == "findDoctorsByLocation":
-            print "find doctors"
+            print ("find doctors")
             reply = self.handle_find_doctor_by_location_message(conversation_response)
         else: 
             if action == "searchPharmacy":
-                print "find searchPharmacy"
+                print ("find searchPharmacy")
                 reply = self.handle_find_pharmacy_by_location_message(conversation_response)
             else:
-                print "normal"
+                print ("normal")
                 reply = self.handle_default_message(conversation_response)
         conversation_response['context']['action'] =None
         # Finally, we log every action performed as part of the active conversation
@@ -154,7 +154,7 @@ class healEasyBot():
         
         
         }
-        print "find doctor by location"
+        print ("find doctor by location")
         if self.foursquare_client is None:
             return 'Please configure Foursquare.'
         # Get the specialty from the context to be used in the query to Foursquare
@@ -162,16 +162,16 @@ class healEasyBot():
         specialty = ''
         if 'specialty' in conversation_response['context'].keys() and conversation_response['context']['specialty'] is not None:
             specialty = conversation_response['context']['specialty']
-        print "Specialty is :" + specialty    
+        print ("Specialty is :" + specialty )   
         category  = ""
         if specialtyDic.has_key(specialty):
             category = specialtyDic[specialty]
         else:
             category = "4bf58dd8d48988d177941735"
-        print "category is " + category
+        print ("category is " + category)
         query = query + specialty + ' '
 
-        print "query is " + query
+        print ("query is " + query)
         #query = query 
         # Get the location entered by the user to be used in the query
         location = 'Austin'
@@ -211,17 +211,17 @@ class healEasyBot():
         conversation_response - The response from Watson Conversation
         """
 
-        print "find Pharmacy by location"
+        print ("find Pharmacy by location")
         if self.foursquare_client is None:
             return 'Please configure Foursquare.'
         # Get the specialty from the context to be used in the query to Foursquare
         query = ''
         specialty = 'Pharmacy'
         category = "4bf58dd8d48988d10f951735"
-        print "category is " + category
+        print ("category is " + category)
         query = query + specialty + ' '
 
-        print "query is " + query
+        print ("query is " + query)
         #query = query 
         # Get the location entered by the user to be used in the query
         location = 'Austin'
