@@ -112,7 +112,7 @@ class healEasyBot():
             if action == "searchPharmacy":
                 reply = self.handle_find_doctor_by_location_message(conversation_response)
             else:
-                print "norma"
+                print "normal"
                 reply = self.handle_default_message(conversation_response)
 
         # Finally, we log every action performed as part of the active conversation
@@ -173,8 +173,8 @@ class healEasyBot():
         print "query is " + query
         #query = query 
         # Get the location entered by the user to be used in the query
-        location = 'Galvanize, 119 Nueces St, Austin, TX 78701'
-        #if 'entities' in conversation_response.keys():
+        location = '119 Nueces St, Austin, TX 78701'
+        #if 'entities' in conversation_respon.keys():
          #   for entity in conversation_response['entities']:
          #       if (entity['entity'] == 'sys-location'):
          #           if len(location) > 0:
@@ -197,7 +197,7 @@ class healEasyBot():
         #             reply = reply + '\n'
         #         reply = reply + '* ' + venue['name']
         # return Sreply
-        return jsonify(venues)
+        return json.dumps(venues)
 
     def get_or_create_user(self, message_sender):
         """
