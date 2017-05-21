@@ -2,6 +2,7 @@ import json
 import sys
 import time
 import threading
+from flask import jsonify
 
 from foursquare import Foursquare
 from watson_developer_cloud import ConversationV1
@@ -109,7 +110,7 @@ class healEasyBot():
             reply = self.handle_find_doctor_by_location_message(conversation_response)
         else: 
             if action == "searchPharmacy":
-                reply = self.handle_find_pharmacy_by_location_message(conversation_response)
+                reply = self.handle_find_doctor_by_location_message(conversation_response)
             else:
                 print "norma"
                 reply = self.handle_default_message(conversation_response)
@@ -144,21 +145,35 @@ class healEasyBot():
         conversation_response - The response from Watson Conversation
         """
 
-        specialtyDic = {}
+        specialtyDic = {"Dermatologist":"4bf58dd8d48988d177941735",
+        "Orthopedic Surgeon":"4bf58dd8d48988d177941735",
+        "Dentist":"4bf58dd8d48988d178941735",
+        "Physical Therapist":"5744ccdfe4b0c0459246b4af",
+        "Pharmacy":"4bf58dd8d48988d10f951735"
+        
+        
+        }
         print "find doctor by location"
         if self.foursquare_client is None:
             return 'Please configure Foursquare.'
         # Get the specialty from the context to be used in the query to Foursquare
         query = ''
-        specialty = ''
+        specialty = 'dermatologist'
         if 'specialty' in conversation_response['context'].keys() and conversation_response['context']['specialty'] is not None:
             specialty = conversation_response['context']['specialty']
         print "Specialty is :" + specialty    
-            
-        query = query + conversation_response['context']['specialty'] + ' '
+        category  = ""
+        if specialtyDic.has_key(specialty):
+            category = specialtyDic[specialty]
+        else:
+            category = "4bf58dd8d48988d177941735"
+        print "category is " + category
+        query = query + specialty + ' '
+
+        print "query is " + query
         #query = query 
         # Get the location entered by the user to be used in the query
-        location = 'Austin'
+        location = 'Galvanize, 119 Nueces St, Austin, TX 78701'
         #if 'entities' in conversation_response.keys():
          #   for entity in conversation_response['entities']:
          #       if (entity['entity'] == 'sys-location'):
@@ -168,19 +183,21 @@ class healEasyBot():
         params = {
             'query': query,
             'near': location,
-            'categoryId':'4bf58dd8d48988d104941735,4bf58dd8d48988d10f951735',
+            'categoryId':category,
             'radius': 5000
         }
         venues = self.foursquare_client.venues.search(params=params)
-        if venues is None or 'venues' not in venues.keys() or len(venues['venues']) == 0:
-            reply = 'Sorry, I couldn\'t find any doctors near you.'
-        else:
-            reply = 'Here is what I found:\n';
-            for venue in venues['venues']:
-                if len(reply) > 0:
-                    reply = reply + '\n'
-                reply = reply + '* ' + venue['name']
-        return reply
+        print (venues)
+        # if venues is None or 'venues' not in venues.keys() or len(venues['venues']) == 0:
+        #     reply = 'Sorry, I couldn\'t find any doctors near you.'
+        # else:
+        #     reply = 'Here is what I found:\n';
+        #     for venue in venues['venues']:
+        #         if len(reply) > 0:
+        #             reply = reply + '\n'
+        #         reply = reply + '* ' + venue['name']
+        # return Sreply
+        return jsonify(venues)
 
     def get_or_create_user(self, message_sender):
         """

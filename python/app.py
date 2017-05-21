@@ -83,5 +83,5 @@ if __name__ == '__main__':
         server.serve_forever()
     except (KeyboardInterrupt, SystemExit):
         # Stop Controllers
-        slackBotController.stop()
+        #slackBotController.stop()
         web_socket_bot_controller.stop()
