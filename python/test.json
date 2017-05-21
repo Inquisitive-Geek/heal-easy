@@ -1,0 +1,15 @@
+
+{"geocode": {"parents": [], "what": "", "where": "austin", "feature": {"highlightedName": "<b>Austin</b>, TX, United St
+ates", "displayName": "Austin, TX, United States", "name": "Austin", "longId": "72057594042599590", "cc": "US", "id": "
+geonameid:4671654", "geometry": {"center": {"lat": 30.26715, "lng": -97.74306}, "bounds": {"sw": {"lat": 30.09865899999
+9998, "lng": -97.938383}, "ne": {"lat": 30.516862999999997, "lng": -97.561489}}}, "matchedName": "Austin, TX, United St
+ates", "woeType": 7, "slug": "austin-texas"}}, "venues": [{"referralId": "v-1495388393", "verified": false, "name": "Dr
+. Anne Epstein, Dermatologist", "venueRatingBlacklisted": true, "venueChains": [], "hereNow": {"count": 0, "groups": []
+, "summary": "Nobody here"}, "specials": {"count": 0, "items": []}, "allowMenuUrlEdit": true, "contact": {}, "hasPerk":
+ false, "location": {"city": "Austin", "labeledLatLngs": [{"lat": 30.2266918945012, "lng": -97.77235694358384, "label":
+ "display"}], "cc": "US", "country": "United States", "postalCode": "78704", "state": "TX", "formattedAddress": ["717-7
+99 W Ben White Blvd", "Austin, TX 78704", "United States"], "address": "717-799 W Ben White Blvd", "lat": 30.2266918945
+012, "lng": -97.77235694358384}, "beenHere": {"lastCheckinExpiredAt": 0}, "stats": {"tipCount": 0, "checkinsCount": 8,
+"usersCount": 7}, "id": "4c28a943ce3fc92860766d88", "categories": [{"pluralName": "Doctor's Offices", "primary": true,
+"name": "Doctor's Office", "shortName": "Doctor's Office", "id": "4bf58dd8d48988d177941735", "icon": {"prefix": "https:
+//ss3.4sqi.net/img/categories_v2/building/medical_doctorsoffice_", "suffix": ".png"}}]}]}

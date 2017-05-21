@@ -3,6 +3,8 @@ import sys
 import time
 import threading
 from flask import jsonify
+import csv
+import random
 
 from foursquare import Foursquare
 from watson_developer_cloud import ConversationV1
@@ -41,6 +43,31 @@ class healEasyBot():
         """
         self.user_store.init()
         self.dialog_store.init()
+        self.load_appointments()
+        #print (self.appointments_dic)
+
+    def load_appointments(self):
+        with open('appointment.csv', mode='r') as infile:
+            reader = csv.reader(infile)
+            #self.appointments_dic =  {rows[0]:(rows[1],rows[1]) for rows in reader}
+            lastrow = ""
+            a_list = []
+            self.appointments_dic={}
+            for rows in reader:
+                current_row =rows[0]
+                if lastrow ==current_row :
+                    a_list.append(rows[1])
+                    self.appointments_dic[current_row]=a_list
+                else:
+                    lastrow=current_row
+                    a_list = []
+                    a_list.append(rows[1])
+                    self.appointments_dic[current_row]=a_list
+
+        
+        
+        
+
 
     def process_message(self, message_sender, message):
         """
@@ -113,8 +140,12 @@ class healEasyBot():
                 print ("find searchPharmacy")
                 reply = self.handle_find_pharmacy_by_location_message(conversation_response)
             else:
-                print ("normal")
-                reply = self.handle_default_message(conversation_response)
+                if action == "findAppointments":
+                    print ("find findAppointment")
+                    reply = self.handle_findAppointments_message(conversation_response)
+                else:
+                    print ("normal")
+                    reply = self.handle_default_message(conversation_response)
         conversation_response['context']['action'] =None
         # Finally, we log every action performed as part of the active conversation
         # in our Cloudant dialog database and return the reply to be sent to the user.
@@ -135,6 +166,30 @@ class healEasyBot():
         for text in conversation_response['output']['text']:
             reply += text + "\n"
         return reply
+
+    def handle_findAppointments_message(self,conversation_response):
+        
+        sysnumber = conversation_response['context']['sysnumber']
+        if sysnumber is None:
+            sysnumber="1"
+        print(sysnumber)
+        number = int(sysnumber)
+        print(sysnumber)
+        my_key=''
+        for key, value in  self.appointments_dic.items():
+            number = number -1
+            if number ==0 :
+                my_key=key
+           
+
+        a_list = self.appointments_dic[my_key]
+        reply = "Appointments Available"
+        cnt = 1
+        for an_item in a_list:
+            reply = reply + "\n " + str(cnt)  + an_item 
+            cnt=cnt +1
+        return reply
+
 
     def handle_find_doctor_by_location_message(self, conversation_response):
         """
@@ -185,20 +240,27 @@ class healEasyBot():
             'query': query,
             'near': location,
             'categoryId':category,
+            'limit':10,
             'radius': 5000
         }
         venues = self.foursquare_client.venues.search(params=params)
-        #print (venues)
-        # if venues is None or 'venues' not in venues.keys() or len(venues['venues']) == 0:
-        #     reply = 'Sorry, I couldn\'t find any doctors near you.'
-        # else:
-        #     reply = 'Here is what I found:\n';
-        #     for venue in venues['venues']:
-        #         if len(reply) > 0:
-        #             reply = reply + '\n'
-        #         reply = reply + '* ' + venue['name']
-        # return Sreply
-        return json.dumps(venues)
+        print (venues)
+        #if venues is None :
+        #print (json.dumps(venues))
+        cnt =1 
+        if venues is None or 'venues' not in venues.keys() or len(venues['venues']) == 0:
+            reply = 'Sorry, I couldn\'t find any doctors near you.'
+        else:
+             reply = 'Here is what I found:\n';
+             for venue in venues['venues']:
+                 if len(reply) > 0:
+                    reply = reply + '\n'
+                 reply = reply + str(cnt) +' ' + venue['name']
+                 #reply = reply + 
+                 cnt = cnt + 1
+             reply = reply +'\n\n Select a doctor :'
+        return reply
+        #return json.dumps(venues)
 
 
     def handle_find_pharmacy_by_location_message(self, conversation_response):
@@ -235,6 +297,7 @@ class healEasyBot():
             'query': query,
             'near': location,
             'categoryId':category,
+            'limit':10,
             'radius': 5000
         }
         venues = self.foursquare_client.venues.search(params=params)
@@ -243,12 +306,24 @@ class healEasyBot():
         #     reply = 'Sorry, I couldn\'t find any doctors near you.'
         # else:
         #     reply = 'Here is what I found:\n';
-        #     for venue in venues['venues']:
-        #         if len(reply) > 0:
-        #             reply = reply + '\n'
-        #         reply = reply + '* ' + venue['name']
+        
+        print (venues)
+        #for venue in venues['venues']:
+        cnt = 0
+        if venues is None or 'venues' not in venues.keys() or len(venues['venues']) == 0:
+            reply = 'Sorry, I couldn\'t find any doctors near you.'
+        else:
+             reply = 'Here is what I found:\n';
+             for venue in venues['venues']:
+                 if len(reply) > 0:
+                    reply = reply + '\n'
+                 reply = reply + str(cnt) +' ' + venue['name']
+                 #reply = reply + 
+                 cnt = cnt + 1
+             #reply = reply +
+        return reply
         # return Sreply
-        return json.dumps(venues)
+     #   return json.dumps(venues)
        
 
     def get_or_create_user(self, message_sender):
