@@ -110,11 +110,12 @@ class healEasyBot():
             reply = self.handle_find_doctor_by_location_message(conversation_response)
         else: 
             if action == "searchPharmacy":
-                reply = self.handle_find_doctor_by_location_message(conversation_response)
+                print "find searchPharmacy"
+                reply = self.handle_find_pharmacy_by_location_message(conversation_response)
             else:
                 print "normal"
                 reply = self.handle_default_message(conversation_response)
-
+        conversation_response['context']['action'] =None
         # Finally, we log every action performed as part of the active conversation
         # in our Cloudant dialog database and return the reply to be sent to the user.
         if conversation_doc_id is not None and action is not None:
@@ -158,7 +159,7 @@ class healEasyBot():
             return 'Please configure Foursquare.'
         # Get the specialty from the context to be used in the query to Foursquare
         query = ''
-        specialty = 'dermatologist'
+        specialty = ''
         if 'specialty' in conversation_response['context'].keys() and conversation_response['context']['specialty'] is not None:
             specialty = conversation_response['context']['specialty']
         print "Specialty is :" + specialty    
@@ -173,7 +174,7 @@ class healEasyBot():
         print "query is " + query
         #query = query 
         # Get the location entered by the user to be used in the query
-        location = '119 Nueces St, Austin, TX 78701'
+        location = 'Austin'
         #if 'entities' in conversation_respon.keys():
          #   for entity in conversation_response['entities']:
          #       if (entity['entity'] == 'sys-location'):
@@ -187,7 +188,7 @@ class healEasyBot():
             'radius': 5000
         }
         venues = self.foursquare_client.venues.search(params=params)
-        print (venues)
+        #print (venues)
         # if venues is None or 'venues' not in venues.keys() or len(venues['venues']) == 0:
         #     reply = 'Sorry, I couldn\'t find any doctors near you.'
         # else:
@@ -198,6 +199,57 @@ class healEasyBot():
         #         reply = reply + '* ' + venue['name']
         # return Sreply
         return json.dumps(venues)
+
+
+    def handle_find_pharmacy_by_location_message(self, conversation_response):
+        """
+        The handler for the findDoctorByLocation action defined in the Watson Conversation dialog.
+        Queries Foursquare for doctors based on the speciality identified by Watson Conversation
+        and the location entered by the user.
+        Parameters
+        ----------
+        conversation_response - The response from Watson Conversation
+        """
+
+        print "find Pharmacy by location"
+        if self.foursquare_client is None:
+            return 'Please configure Foursquare.'
+        # Get the specialty from the context to be used in the query to Foursquare
+        query = ''
+        specialty = 'Pharmacy'
+        category = "4bf58dd8d48988d10f951735"
+        print "category is " + category
+        query = query + specialty + ' '
+
+        print "query is " + query
+        #query = query 
+        # Get the location entered by the user to be used in the query
+        location = 'Austin'
+        #if 'entities' in conversation_respon.keys():
+         #   for entity in conversation_response['entities']:
+         #       if (entity['entity'] == 'sys-location'):
+         #           if len(location) > 0:
+         #               location = location + ' '
+         #       location = location + entity['value']
+        params = {
+            'query': query,
+            'near': location,
+            'categoryId':category,
+            'radius': 5000
+        }
+        venues = self.foursquare_client.venues.search(params=params)
+        #print (venues)
+        # if venues is None or 'venues' not in venues.keys() or len(venues['venues']) == 0:
+        #     reply = 'Sorry, I couldn\'t find any doctors near you.'
+        # else:
+        #     reply = 'Here is what I found:\n';
+        #     for venue in venues['venues']:
+        #         if len(reply) > 0:
+        #             reply = reply + '\n'
+        #         reply = reply + '* ' + venue['name']
+        # return Sreply
+        return json.dumps(venues)
+       
 
     def get_or_create_user(self, message_sender):
         """
